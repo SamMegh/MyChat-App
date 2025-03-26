@@ -29,8 +29,14 @@ class InputBox extends StatelessWidget {
       keyboardType: keyboardType,
       decoration: InputDecoration(
         hintText: hintText,
-        prefix: prefixIcon,
-        suffix: suffixIcon,
+        prefixIcon: Padding(
+          padding: const EdgeInsets.only(left: 16.0),
+          child: prefixIcon,
+        ),
+        suffixIcon: Padding(
+          padding: const EdgeInsets.only(right: 16.0),
+          child: suffixIcon,
+        ),
       ),
 
     );
