@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mychat/core/common/coustom_button.dart';
 import 'package:mychat/core/common/input_box.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -42,6 +43,11 @@ class _LoginScreen extends State<LoginScreen> {
               prefixIcon: Icon(Icons.lock_outline_rounded),
               suffixIcon: Icon(Icons.remove_red_eye_outlined),
               obscureText:true),
+              SizedBox(height: 10,),
+              Center(child: CoustomButton(
+                text: "Login",
+                onPressed: (){},
+              )),
             ],
           ),
         ),
