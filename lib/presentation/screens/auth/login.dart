@@ -1,6 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mychat/core/common/coustom_button.dart';
-import 'package:mychat/core/common/input_box.dart';
+import 'package:mychat/core/common/coustom_input_box.dart';
+import 'package:mychat/presentation/screens/auth/signup.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -75,6 +77,16 @@ class _LoginScreen extends State<LoginScreen> {
                           color: Theme.of(context).primaryColor,
                           fontWeight: FontWeight.bold,
                         ),
+                        recognizer:
+                            TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const SignupScreen(),
+                                  ),
+                                );
+                              },
                       ),
                     ],
                   ),
