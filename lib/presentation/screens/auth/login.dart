@@ -20,9 +20,10 @@ class _LoginScreen extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: 50,),
               Text(
                 "Welcome Back!",
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -44,10 +45,27 @@ class _LoginScreen extends State<LoginScreen> {
               suffixIcon: Icon(Icons.remove_red_eye_outlined),
               obscureText:true),
               SizedBox(height: 10,),
+              Text("Forget Password", style:TextStyle(
+                color: Theme.of(context).primaryColor,
+                
+              ),),
               Center(child: CoustomButton(
                 text: "Login",
                 onPressed: (){},
-              )),
+              ),
+              ),
+             RichText(
+              text: TextSpan(
+                text: "Need an account! ",
+                children: [TextSpan(
+                  text: "Signup",
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                  )
+                )]
+              ),
+             ),
+            
             ],
           ),
         ),
