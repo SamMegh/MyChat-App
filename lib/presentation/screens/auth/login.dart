@@ -11,6 +11,14 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreen extends State<LoginScreen> {
   final TextEditingController emailcontroller = TextEditingController();
   final TextEditingController passwordcontroller = TextEditingController();
+
+  @override
+  void dispose() {
+    emailcontroller.dispose();
+    passwordcontroller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +28,7 @@ class _LoginScreen extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 50,),
+              SizedBox(height: 50),
               Text(
                 "Welcome Back!",
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
@@ -30,7 +38,9 @@ class _LoginScreen extends State<LoginScreen> {
               SizedBox(height: 10),
               Text(
                 "login to continue",
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
               ),
               SizedBox(height: 30),
               InputBox(
@@ -39,33 +49,37 @@ class _LoginScreen extends State<LoginScreen> {
                 prefixIcon: Icon(Icons.email_outlined),
               ),
               SizedBox(height: 10),
-              InputBox(controller: passwordcontroller,
-              hintText: "Password",
-              prefixIcon: Icon(Icons.lock_outline_rounded),
-              suffixIcon: Icon(Icons.remove_red_eye_outlined),
-              obscureText:true),
-              SizedBox(height: 10,),
-              Text("Forget Password", style:TextStyle(
-                color: Theme.of(context).primaryColor,
-                
-              ),),
-              Center(child: CoustomButton(
-                text: "Login",
-                onPressed: (){},
+              InputBox(
+                controller: passwordcontroller,
+                hintText: "Password",
+                prefixIcon: Icon(Icons.lock_outline_rounded),
+                suffixIcon: Icon(Icons.remove_red_eye_outlined),
+                obscureText: true,
               ),
+              SizedBox(height: 10),
+              Text(
+                "Forget Password",
+                style: TextStyle(color: Theme.of(context).primaryColor),
               ),
-             RichText(
-              text: TextSpan(
-                text: "Need an account! ",
-                children: [TextSpan(
-                  text: "Signup",
-                  style: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                  )
-                )]
+              Center(child: CoustomButton(text: "Login", onPressed: () {})),
+              SizedBox(height: 20),
+              Center(
+                child: RichText(
+                  text: TextSpan(
+                    text: "Need an account! ",
+                    style: TextStyle(color: Colors.grey),
+                    children: [
+                      TextSpan(
+                        text: "Signup",
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-             ),
-            
             ],
           ),
         ),
