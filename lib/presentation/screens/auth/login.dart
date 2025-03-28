@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:mychat/core/common/coustom_button.dart';
 import 'package:mychat/core/common/coustom_input_box.dart';
 import 'package:mychat/presentation/screens/auth/signup.dart';
+import 'package:mychat/routes/app_routor.dart';
+import 'package:mychat/services/service_locator.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,8 +16,8 @@ class _LoginScreen extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailcontroller = TextEditingController();
   final TextEditingController passwordcontroller = TextEditingController();
-bool hidePassword = true;
-  
+  bool hidePassword = true;
+
   final _emailFocus = FocusNode();
   final _passwordFocus = FocusNode();
 
@@ -92,25 +94,34 @@ bool hidePassword = true;
                   focusNode: _passwordFocus,
                   validator: _passwordValidator,
                   prefixIcon: Icon(Icons.lock_outline_rounded),
-                   suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          hidePassword = !hidePassword;
-                        });
-                      },
-                      icon: Icon(hidePassword?Icons.visibility_off_outlined:Icons.visibility_outlined),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        hidePassword = !hidePassword;
+                      });
+                    },
+                    icon: Icon(
+                      hidePassword
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
                     ),
-                    obscureText: hidePassword,
+                  ),
+                  obscureText: hidePassword,
                 ),
                 SizedBox(height: 10),
                 Text(
                   "Forget Password",
                   style: TextStyle(color: Theme.of(context).primaryColor),
                 ),
-                Center(child: CoustomButton(text: "Login", onPressed: () {
-                  FocusScope.of(context).unfocus();
-                    if (_formKey.currentState?.validate() ?? false) {}
-                })),
+                Center(
+                  child: CoustomButton(
+                    text: "Login",
+                    onPressed: () {
+                      FocusScope.of(context).unfocus();
+                      if (_formKey.currentState?.validate() ?? false) {}
+                    },
+                  ),
+                ),
                 SizedBox(height: 20),
                 Center(
                   child: RichText(
@@ -120,19 +131,16 @@ bool hidePassword = true;
                       children: [
                         TextSpan(
                           text: "Signup",
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyLarge?.copyWith(
                             color: Theme.of(context).primaryColor,
                             fontWeight: FontWeight.bold,
                           ),
                           recognizer:
                               TapGestureRecognizer()
                                 ..onTap = () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const SignupScreen(),
-                                    ),
-                                  );
+                                  getIt<AppRoutor>().push(SignupScreen());
                                 },
                         ),
                       ],

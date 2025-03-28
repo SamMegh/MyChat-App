@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:mychat/core/common/coustom_button.dart';
 import 'package:mychat/core/common/coustom_input_box.dart';
 import 'package:mychat/presentation/screens/auth/login.dart';
+import 'package:mychat/routes/app_routor.dart';
+import 'package:mychat/services/service_locator.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -162,7 +164,11 @@ class _SignupScreen extends State<SignupScreen> {
                         hidePassword = !hidePassword;
                       });
                     },
-                    icon: Icon(hidePassword?Icons.visibility_off_outlined:Icons.visibility_outlined),
+                    icon: Icon(
+                      hidePassword
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                    ),
                   ),
                   obscureText: hidePassword,
                 ),
@@ -191,12 +197,7 @@ class _SignupScreen extends State<SignupScreen> {
                           recognizer:
                               TapGestureRecognizer()
                                 ..onTap = () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const LoginScreen(),
-                                    ),
-                                  );
+                                  getIt<AppRoutor>().push(LoginScreen());
                                 },
                         ),
                       ],
