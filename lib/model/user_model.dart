@@ -15,7 +15,7 @@ class UserModel {
     required this.uid,
     required this.fullName,
     required this.userName,
-    required this.email,
+    required this.email,  
     required this.phoneNumber,
     this.isOnline = false,
     Timestamp? lastSeen,
