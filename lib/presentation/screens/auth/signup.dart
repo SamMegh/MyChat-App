@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mychat/core/common/coustom_button.dart';
 import 'package:mychat/core/common/coustom_input_box.dart';
 import 'package:mychat/presentation/screens/auth/login.dart';
+import 'package:mychat/repositories/auth_repo.dart';
 import 'package:mychat/routes/app_routor.dart';
 import 'package:mychat/services/service_locator.dart';
 
@@ -97,6 +98,25 @@ class _SignupScreen extends State<SignupScreen> {
     super.dispose();
   }
 
+  Future<void> handleSignup() async {
+    FocusScope.of(context).unfocus();
+    if (_formKey.currentState?.validate() ?? false) {
+      try {
+        getIt<AuthRepo>().signUp(
+          fullName: fullNameController.text,
+          userName: userNameController.text,
+          phoneNumber: phoneController.text,
+          email: emailController.text,
+          password: passwordContoller.text,
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      }
+    }else{
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Form Validation Failed")));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -173,13 +193,7 @@ class _SignupScreen extends State<SignupScreen> {
                   obscureText: hidePassword,
                 ),
                 SizedBox(height: 20),
-                CoustomButton(
-                  onPressed: () {
-                    FocusScope.of(context).unfocus();
-                    if (_formKey.currentState?.validate() ?? false) {}
-                  },
-                  text: "Create Account",
-                ),
+                CoustomButton(onPressed: handleSignup, text: "Create Account"),
                 SizedBox(height: 10),
                 Center(
                   child: RichText(
