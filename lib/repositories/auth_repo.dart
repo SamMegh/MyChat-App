@@ -72,4 +72,8 @@ class AuthRepo extends BaseRepo {
       throw 'Failed to find user data';
     }
   }
+
+  Future<void> signOut() async{
+   await auth.signOut();
+  }
 }
