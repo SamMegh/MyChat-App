@@ -16,7 +16,6 @@ class CoustomButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).primaryColor,
           foregroundColor: Colors.black87,
-          padding: EdgeInsets.symmetric(vertical: 8),
         ),
         onPressed: () async {
                   await onPressed.call();

@@ -24,7 +24,7 @@ class UserModel {
     this.blockedUsers = const [],
   }) : lastSeen = lastSeen ?? Timestamp.now(),
        createdAt = createdAt ?? Timestamp.now();
-  @override
+
   UserModel copyWith({
     String? uid,
     String? fullName,

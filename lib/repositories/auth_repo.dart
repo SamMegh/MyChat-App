@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mychat/model/user_model.dart';
 import 'package:mychat/services/base_repo.dart';
 
 class AuthRepo extends BaseRepo {
+  Stream<User?> get authStateChanges => auth.authStateChanges();
+
   Future<UserModel> signUp({
     required String fullName,
     required String userName,
