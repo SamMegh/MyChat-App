@@ -55,14 +55,14 @@ class UserModel {
     final data = doc.data() as Map<String, dynamic>;
     return UserModel(
       uid: doc.id,
-      fullName: data['fullName'],
-      userName: data['userName'],
-      email: data['email'],
-      phoneNumber: data['phoneNumber'],
+      fullName: data['fullName']??"",
+      userName: data['userName']??"",
+      email: data['email']??"",
+      phoneNumber: data['phoneNumber']??"",
       fcmToken: data['fcmToken'],
-      lastSeen: data['lastSeen'],
-      createdAt: data['createdAt'],
-      blockedUsers: data['blockedUsers'],
+      lastSeen: data['lastSeen']?? Timestamp.now(),
+      createdAt: data['createdAt']??Timestamp.now(),
+      blockedUsers: List<String>.from(data['blockedUsers']),
     );
   }
 

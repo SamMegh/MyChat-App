@@ -2,8 +2,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mychat/core/common/coustom_button.dart';
 import 'package:mychat/core/common/coustom_input_box.dart';
+import 'package:mychat/logic/cubit/auth_cubit.dart';
 import 'package:mychat/presentation/screens/auth/login.dart';
-import 'package:mychat/repositories/auth_repo.dart';
 import 'package:mychat/routes/app_routor.dart';
 import 'package:mychat/services/service_locator.dart';
 
@@ -102,7 +102,7 @@ class _SignupScreen extends State<SignupScreen> {
     FocusScope.of(context).unfocus();
     if (_formKey.currentState?.validate() ?? false) {
       try {
-        getIt<AuthRepo>().signUp(
+        getIt<AuthCubit>().signUp(
           fullName: fullNameController.text,
           userName: userNameController.text,
           phoneNumber: phoneController.text,

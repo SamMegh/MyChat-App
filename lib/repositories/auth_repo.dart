@@ -73,7 +73,7 @@ class AuthRepo extends BaseRepo {
     }
   }
 
-  Future<void> signOut() async{
-   await auth.signOut();
+  Future<void> signOut() async {
+    await auth.signOut();
   }
 }

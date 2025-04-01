@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mychat/core/common/coustom_button.dart';
 import 'package:mychat/core/common/coustom_input_box.dart';
+import 'package:mychat/logic/cubit/auth_cubit.dart';
 import 'package:mychat/presentation/screens/auth/signup.dart';
 import 'package:mychat/routes/app_routor.dart';
 import 'package:mychat/services/service_locator.dart';
@@ -53,6 +54,22 @@ class _LoginScreen extends State<LoginScreen> {
     }
     return null;
   }
+
+Future<void> handlelogin() async{
+  
+  FocusScope.of(context).unfocus();
+  if (_formKey.currentState?.validate() ?? false) {try {
+        getIt<AuthCubit>().logIn(
+          email: emailcontroller.text,
+          password: passwordcontroller.text,
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      }
+    }else{
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Form Validation Failed")));
+    }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -116,10 +133,7 @@ class _LoginScreen extends State<LoginScreen> {
                 Center(
                   child: CoustomButton(
                     text: "Login",
-                    onPressed: () {
-                      FocusScope.of(context).unfocus();
-                      if (_formKey.currentState?.validate() ?? false) {}
-                    },
+                    onPressed: handlelogin,
                   ),
                 ),
                 SizedBox(height: 20),
