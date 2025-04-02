@@ -13,6 +13,21 @@ class AuthRepo extends BaseRepo {
     required String password,
   }) async {
     try {
+      final isemail = await checkEmailExists(email);
+      if (isemail) {
+        throw 'Email alerady exists';
+      }
+
+      final isphone = await checkPhoneExists(phoneNumber);
+      if (isphone) {
+        throw 'Phone Number alerady exists';
+      }
+
+      final isUserName = await checkUserExists(userName);
+      if (isUserName) {
+        throw 'User Name alerady exists';
+      }
+
       final userCredential = await auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -63,7 +78,7 @@ class AuthRepo extends BaseRepo {
 
   Future<UserModel> getUserData(String uid) async {
     try {
-      final doc = await firestore.collection("users").doc("uid").get();
+      final doc = await firestore.collection("users").doc(uid).get();
       if (!doc.exists) {
         throw 'User data not found';
       }
@@ -75,5 +90,40 @@ class AuthRepo extends BaseRepo {
 
   Future<void> signOut() async {
     await auth.signOut();
+  }
+
+  Future<bool> checkEmailExists(String email) async {
+    try {
+      final res = await auth.fetchSignInMethodsForEmail(email);
+      return res.isNotEmpty;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> checkPhoneExists(String phone) async {
+    try {
+      final res =
+          await firestore
+              .collection("users")
+              .where("phoneNumber", isEqualTo: phone)
+              .get();
+      return res.docs.isNotEmpty;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> checkUserExists(String userName) async {
+    try {
+      final res =
+          await firestore
+              .collection("users")
+              .where("userName", isEqualTo: userName)
+              .get();
+      return res.docs.isNotEmpty;
+    } catch (e) {
+      return false;
+    }
   }
 }
