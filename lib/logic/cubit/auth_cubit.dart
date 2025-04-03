@@ -14,19 +14,24 @@ class AuthCubit extends Cubit<AuthState> {
     _init();
   }
   void _init() {
-  emit(state.copyWith(status: AuthStatus.initial));
-  _authStateSubscription = _authRepo.authStateChanges.listen((user) async {
-    if (user != null) {
-      try {
-        final userData = await _authRepo.getUserData(user.uid);
-        emit(state.copyWith(status: AuthStatus.authenticated, user: userData));
-      } catch (e) {
-        emit(state.copyWith(status: AuthStatus.error, error: e.toString()));
+    emit(state.copyWith(status: AuthStatus.initial));
+    _authStateSubscription = _authRepo.authStateChanges.listen((user) async {
+      if (user != null) {
+        try {
+          emit(state.copyWith(status: AuthStatus.loading));
+          final userData = await _authRepo.getUserData(user.uid);
+          emit(
+            state.copyWith(status: AuthStatus.authenticated, user: userData),
+          );
+        } catch (e) {
+          emit(state.copyWith(status: AuthStatus.error, error: e.toString()));
+        }
+      } else {
+        emit(
+          state.copyWith(status: AuthStatus.unauthenticated, user: null),
+        ); // Fix here
       }
-    } else {
-      emit(state.copyWith(status: AuthStatus.unauthenticated, user: null)); // Fix here
-    }
-  });
+    });
   }
 
   Future<void> logIn({required String email, required String password}) async {

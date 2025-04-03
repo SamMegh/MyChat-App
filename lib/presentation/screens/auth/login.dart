@@ -87,7 +87,7 @@ class _LoginScreen extends State<LoginScreen> {
         if (state.status == AuthStatus.authenticated) {
           getIt<AppRoutor>().pushAndRemoveUntil(Home());
         } else if (state.status == AuthStatus.error && state.error != null) {
-          UiUtils().showSnackBar(context, message: state.error);
+          UiUtils().showSnackBar(context, message: state.error, isError: true);
         }
       },
       builder: (context, state) {
@@ -148,7 +148,9 @@ class _LoginScreen extends State<LoginScreen> {
                       style: TextStyle(color: Theme.of(context).primaryColor),
                     ),
                     Center(
-                      child: CoustomButton(
+                      child: state.status==AuthStatus.loading?CircularProgressIndicator(
+                        color: Theme.of(context).primaryColor
+                      ) : CoustomButton(
                         text: "Login",
                         onPressed: handlelogin,
                       ),

@@ -7,15 +7,15 @@ class UiUtils {
     bool isError = false,
     Duration duration = const Duration(seconds: 2),
   }) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message),
-    backgroundColor: isError?Colors.red:Colors.lightGreenAccent,
-    duration: duration,
-    behavior: SnackBarBehavior.floating,
-    margin: EdgeInsets.all(16),
-
-    ),
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : Colors.lightGreenAccent,
+        duration: duration,
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.all(16),
+      ),
     );
   }
 }
