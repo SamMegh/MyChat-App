@@ -21,7 +21,7 @@ class Home extends StatelessWidget {
           ),
         ],
       ),
-      body: const Center(child: Text("You are logged in")),
+      body: const Center(child: Text("you are login")),
     );
   }
 }
