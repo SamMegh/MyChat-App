@@ -53,10 +53,11 @@ class _HomeState extends State<Home> {
                         final contact = contacts[index];
                         return ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                            backgroundColor: Theme.of(context).primaryColor.withOpacity(0.3),
                             child: Text(contact['name'][0].toString().toUpperCase()),
                           ),
                           title: Text(contact["name"]),
+                          subtitle: Text(contact['phoneNumber'].toString().replaceAll("+91","")),
                         );
                       },
                     ),

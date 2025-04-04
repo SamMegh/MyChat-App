@@ -10,6 +10,16 @@ class ContactRepo extends BaseRepo {
     return await FlutterContacts.requestPermission();
   }
 
+ String _cleanPhoneNumber(String number) {  
+  String cleaned = number.replaceAll(RegExp(r'[^\d+]'), "");  
+  if (!cleaned.startsWith("+") && cleaned.length == 10) {
+    cleaned = "+91$cleaned";
+  }
+
+ 
+  return cleaned;
+}
+
   Future<List<Map<String, dynamic>>> getRegisteredContact() async {
     try {
       final contacts = await FlutterContacts.getContacts(
@@ -22,20 +32,18 @@ class ContactRepo extends BaseRepo {
               .map(
                 (contact) => {
                   'name': contact.displayName,
-                  'phoneNumber': contact.phones.first.number.replaceAll(
-                    RegExp(r'[^\d+]'),
-                    "",
-                  ),
+                  'phoneNumber': _cleanPhoneNumber(contact.phones.first.number),
                   'photo': contact.photo,
                 },
-              )
+              ).toSet()
               .toList();
-
       final usersnapshoot = await firestore.collection("users").get();
-      final registeredUsers =
-          usersnapshoot.docs
-              .map((doc) => UserModel.formFirestore(doc))
-              .toList();
+      final registeredUsers = usersnapshoot.docs.map((doc) {
+  final user = UserModel.formFirestore(doc);
+  user.phoneNumber = _cleanPhoneNumber(user.phoneNumber); // ✅ Normalize Firestore number
+  return user;
+}).where((user) => user.phoneNumber.isNotEmpty).toList();
+
       final matchedContact =
           phoneNumbers
               .where((contact) {
@@ -60,11 +68,10 @@ class ContactRepo extends BaseRepo {
                 return {
                   'id': registeredUser.uid,
                   'name': contact['name'],
-                  'PhoneNumber': contact["phoneNumber"],
+                  'phoneNumber': contact["phoneNumber"],
                 };
               })
               .toList();
-      print(matchedContact);
       return matchedContact;
     } catch (e) {
       throw 'Failed to fetch Numbers';

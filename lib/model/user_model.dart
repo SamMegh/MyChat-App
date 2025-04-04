@@ -5,7 +5,7 @@ class UserModel {
   final String fullName;
   final String userName;
   final String email;
-  final String phoneNumber;
+  String phoneNumber;
   final bool isOnline;
   final Timestamp lastSeen;
   final Timestamp createdAt;
