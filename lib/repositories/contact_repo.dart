@@ -24,7 +24,6 @@ class ContactRepo extends BaseRepo {
     try {
       final contacts = await FlutterContacts.getContacts(
         withProperties: true,
-        withPhoto: true,
       );
       final phoneNumbers =
           contacts
@@ -33,7 +32,6 @@ class ContactRepo extends BaseRepo {
                 (contact) => {
                   'name': contact.displayName,
                   'phoneNumber': _cleanPhoneNumber(contact.phones.first.number),
-                  'photo': contact.photo,
                 },
               ).toSet()
               .toList();

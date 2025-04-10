@@ -1,0 +1,6 @@
+{
+    "diffEditor.renderSideBySide": false,
+    "editor.inlineSuggest.edits.renderSideBySide": "never",
+"workbench.editor.enablePreview": false,
+"workbench.editor.revealIfOpen": true
+}
