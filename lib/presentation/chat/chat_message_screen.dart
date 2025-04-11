@@ -15,6 +15,7 @@ class ChatMessageScreen extends StatefulWidget {
 }
 
 class _ChatMessageScreen extends State<ChatMessageScreen> {
+  TextEditingController inputTextController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,27 +52,64 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
       ),
       body: Column(
         children: [
-          SizedBox(height: 10,),
+          SizedBox(height: 10),
           Expanded(
             child: ListView.builder(
               itemCount: 5,
               itemBuilder: (context, index) {
-                return MessageBubble(message: ChatMessage(
-              id: 'msg_001', 
-              chatRoomId: 'room_123',
-              senderId: 'user_1',
-              reciverId: 'user_2', 
-              messageContent: 'Hello, how are you?', 
-              timestamp: Timestamp.now(), 
-              readBy: [], 
-              status: MessageStatus.read
-            ), 
-                
-                isMe: false);
+                return MessageBubble(
+                  message: ChatMessage(
+                    id: 'msg_001',
+                    chatRoomId: 'room_123',
+                    senderId: 'user_1',
+                    reciverId: 'user_2',
+                    messageContent: 'Hello, how are you?',
+                    timestamp: Timestamp.now(),
+                    readBy: [],
+                    status: MessageStatus.read,
+                  ),
+
+                  isMe: false,
+                );
               },
             ),
           ),
-          Text("hello to chat screen")
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                IconButton(onPressed:(){},
+                icon: Icon(Icons.emoji_emotions_outlined)),
+                SizedBox(width: 3),
+                Expanded(
+                  child: TextField(
+                    controller: inputTextController,
+                    textCapitalization: TextCapitalization.sentences,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: 5,
+                    minLines: 1,
+                    decoration: InputDecoration(
+                      hintText: "Message...",
+                      filled: true,
+                      fillColor: Theme.of(context).cardColor,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  
+                  ),
+                ),
+                SizedBox(width: 3),
+                IconButton(onPressed: () {}, icon: Icon(Icons.send)),
+              ],
+            ),
+          ),
+          SizedBox(height: 3),
         ],
       ),
     );
@@ -85,43 +123,44 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: isMe?Alignment.centerRight:Alignment.centerLeft,
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin:EdgeInsets.only(
-          left: isMe?64:8,
-          right: isMe?8:46,
-          bottom: 4
+        margin: EdgeInsets.only(
+          left: isMe ? 64 : 8,
+          right: isMe ? 8 : 46,
+          bottom: 4,
         ),
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isMe?Theme.of(context).primaryColor.withOpacity(0.4):Colors.grey.shade300,
-          borderRadius: BorderRadius.circular(16)
+          color:
+              isMe
+                  ? Theme.of(context).primaryColor.withOpacity(0.4)
+                  : Colors.grey.shade300,
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            
-            Text(message.messageContent,
-            style: TextStyle(
-              fontSize: 16
-            ),),
+            Text(message.messageContent, style: TextStyle(fontSize: 16)),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text("19:25",
-                style: TextStyle(
-                  fontSize: 12
-                ),
-                ),
-                SizedBox(width:isMe? 5:0,),
-                isMe?Icon(Icons.done_all_rounded,
-                size: 20,
-                color: message.status==MessageStatus.read?Theme.of(context).primaryColor:Colors.black87,
-                ):SizedBox()
+                Text("19:25", style: TextStyle(fontSize: 12)),
+                SizedBox(width: isMe ? 5 : 0),
+                isMe
+                    ? Icon(
+                      Icons.done_all_rounded,
+                      size: 20,
+                      color:
+                          message.status == MessageStatus.read
+                              ? Theme.of(context).primaryColor
+                              : Colors.black87,
+                    )
+                    : SizedBox(),
               ],
             ),
           ],
-          ),
+        ),
       ),
     );
   }

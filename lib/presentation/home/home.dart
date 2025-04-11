@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
-import 'package:mychat/logic/cubit/auth_cubit.dart';
+import 'package:mychat/logic/cubit/auth/auth_cubit.dart';
 import 'package:mychat/presentation/chat/chat_message_screen.dart';
 import 'package:mychat/presentation/screens/auth/login.dart';
 import 'package:mychat/repositories/contact_repo.dart';

@@ -1,9 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mychat/model/chat_message_model.dart';
 import 'package:mychat/model/chat_room_model.dart';
 import 'package:mychat/services/base_repo.dart';
 
 class ChatRepo extends BaseRepo {
   CollectionReference get _chatRooms => firestore.collection("chatRooms");
+  CollectionReference getChatRoomMessage(String roomId) {
+    return _chatRooms.doc(roomId).collection("messages");
+  }
 
   Future<ChatRoomModel> getOrCreateRoom(
     String currentUserId,
@@ -36,5 +40,34 @@ class ChatRepo extends BaseRepo {
     );
     await _chatRooms.doc(roomId).set(newRoom.toMap());
     return newRoom;
+  }
+
+  Future<void> sendMessage({
+    required String roomId,
+    required String senderId,
+    required String reciverId,
+    required String content,
+    Messagetype type = Messagetype.text,
+  }) async {
+    final batch = firestore.batch();
+    final messageRef = getChatRoomMessage(roomId);
+    final messagedoc = messageRef.doc();
+
+    final message = ChatMessage(
+      id: messagedoc.id,
+      chatRoomId: roomId,
+      senderId: senderId,
+      reciverId: reciverId,
+      messageContent: content,
+      timestamp: Timestamp.now(),
+      readBy: [senderId],
+    );
+    batch.set(messagedoc, message.toMap());
+    batch.update(_chatRooms.doc(roomId), {
+      "lastMessage": content,
+      'lastMessageSender': senderId,
+      'lastMessageTime': message.timestamp,
+    });
+    await batch.commit();
   }
 }

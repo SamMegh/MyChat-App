@@ -52,8 +52,8 @@ class ChatMessage {
       "senderId": senderId,
       "reciverId": reciverId,
       "messageContent": messageContent,
-      'type': type,
-      'status': status,
+      'type': type.toString(),
+      'status': status.toString(),
       'timestamp': timestamp,
       'readBy': readBy,
     };
