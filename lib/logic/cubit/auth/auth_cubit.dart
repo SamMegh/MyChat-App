@@ -29,7 +29,7 @@ class AuthCubit extends Cubit<AuthState> {
       } else {
         emit(
           state.copyWith(status: AuthStatus.unauthenticated, user: null),
-        ); // Fix here
+        ); 
       }
     });
   }

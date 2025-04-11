@@ -70,4 +70,32 @@ class ChatRepo extends BaseRepo {
     });
     await batch.commit();
   }
+
+  Stream<List<ChatMessage>> getMessages(
+    String roomId,
+    {DocumentSnapshot? lastsnapshot}
+  ) {
+    var query = getChatRoomMessage(
+      roomId,
+    ).orderBy('timestamp', descending: true).limit(20);
+    if (lastsnapshot != null) {
+      query = query.startAfterDocument(lastsnapshot);
+    }
+    return query.snapshots().map(
+      (snapshot) =>
+          snapshot.docs.map((doc) => ChatMessage.fromFireStore(doc)).toList(),
+    );
+  }
+
+  Future<List<ChatMessage>> getMoreMessage(
+    String roomId, {
+    required DocumentSnapshot lastSnapshot,
+  }) async {
+    final query = getChatRoomMessage(roomId)
+        .orderBy('timestamp', descending: true)
+        .startAfterDocument(lastSnapshot)
+        .limit(20);
+    final snapshot = await query.get();
+    return snapshot.docs.map((doc) => ChatMessage.fromFireStore(doc)).toList();
+  }
 }
