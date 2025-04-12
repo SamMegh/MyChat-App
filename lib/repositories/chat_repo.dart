@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/rendering.dart';
 import 'package:mychat/model/chat_message_model.dart';
 import 'package:mychat/model/chat_room_model.dart';
 import 'package:mychat/services/base_repo.dart';
@@ -72,9 +73,9 @@ class ChatRepo extends BaseRepo {
   }
 
   Stream<List<ChatMessage>> getMessages(
-    String roomId,
-    {DocumentSnapshot? lastsnapshot}
-  ) {
+    String roomId, {
+    DocumentSnapshot? lastsnapshot,
+  }) {
     var query = getChatRoomMessage(
       roomId,
     ).orderBy('timestamp', descending: true).limit(20);
@@ -99,9 +100,47 @@ class ChatRepo extends BaseRepo {
     return snapshot.docs.map((doc) => ChatMessage.fromFireStore(doc)).toList();
   }
 
-  Stream<List<ChatRoomModel>> getMyChatRooms(String userid){
-return _chatRooms.where("participants",arrayContains: userid).orderBy('lastMessageTime', descending: true).snapshots().map((snapshot)=>snapshot.docs.map((doc)=>ChatRoomModel.fromFirestore(doc)).toList());
+  Stream<List<ChatRoomModel>> getMyChatRooms(String userid) {
+    return _chatRooms
+        .where("participants", arrayContains: userid)
+        .orderBy('lastMessageTime', descending: true)
+        .snapshots()
+        .map(
+          (snapshot) =>
+              snapshot.docs
+                  .map((doc) => ChatRoomModel.fromFirestore(doc))
+                  .toList(),
+        );
   }
+
+  Stream<int> getUnreadCount(String roomId, String userId) {
+    return getChatRoomMessage(roomId)
+        .where('reciverId', isEqualTo: userId)
+        .where('status', isEqualTo: MessageStatus.sent.toString())
+        .snapshots()
+        .map((snapshot) => snapshot.docs.length);
+  }
+
+  Future<void> markMessageAsRead(String roomId, String userId) async {
+    try {
+      final batch = firestore.batch();
+      final unreadMessage =
+          await getChatRoomMessage(roomId)
+              .where("reciverId", isEqualTo: userId)
+              .where("status", isEqualTo: MessageStatus.sent.toString())
+              .get();
+      for (final doc in unreadMessage.docs) {
+        batch.update(doc.reference, {
+          'readBy': FieldValue.arrayUnion([userId]),
+          'status': MessageStatus.read.toString(),
+        });
+        await batch.commit();
+      }
+    } catch (e) {
+      debugPrint("got an error $e");
+    }
+  }
+
 
 
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mychat/model/chat_room_model.dart';
+import 'package:mychat/repositories/chat_repo.dart';
+import 'package:mychat/services/service_locator.dart';
 
 class HomeTiles extends StatelessWidget {
   final ChatRoomModel chat;
@@ -32,19 +34,27 @@ class HomeTiles extends StatelessWidget {
         style: TextStyle(fontWeight: FontWeight.w300, fontSize: 18),
       ),
       subtitle: Text(
-          chat.lastMessage ?? "",
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-        ),
-      
-      trailing: Container(
-        padding: EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-          shape: BoxShape.circle,
-        ),
-        child: Text("3"),
+        chat.lastMessage ?? "",
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+      ),
+
+      trailing: StreamBuilder(
+        stream: getIt<ChatRepo>().getUnreadCount(chat.id, currentUserId),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData||snapshot.data==0) {
+            return SizedBox();
+          }
+          return Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              shape: BoxShape.circle,
+            ),
+            child: Text(snapshot.data.toString()),
+          );
+        },
       ),
     );
   }

@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mychat/logic/cubit/chat/chat_state.dart';
 import 'package:mychat/repositories/chat_repo.dart';
@@ -7,6 +7,7 @@ import 'package:mychat/repositories/chat_repo.dart';
 class ChatCubit extends Cubit<ChatState> {
   final ChatRepo _chatRepo;
   final String currentUserId;
+  bool _isInChat = false;
   StreamSubscription? _subMessages;
   ChatCubit({required this.currentUserId, required ChatRepo chatrepo})
     : _chatRepo = chatrepo,
@@ -14,6 +15,7 @@ class ChatCubit extends Cubit<ChatState> {
 
   void enterChatRoom(String reciverId) async {
     emit(state.copyWith(status: ChatStatus.loading));
+    _isInChat = true;
     try {
       final chatroom = await _chatRepo.getOrCreateRoom(
         currentUserId,
@@ -26,7 +28,7 @@ class ChatCubit extends Cubit<ChatState> {
           ricevierId: reciverId,
         ),
       );
-      getMessges(chatroom.id);
+      _getMessges(chatroom.id);
     } catch (e) {
       emit(
         state.copyWith(
@@ -56,13 +58,15 @@ class ChatCubit extends Cubit<ChatState> {
     }
   }
 
-  void getMessges(String roomId) {
+  void _getMessges(String roomId) {
     _subMessages?.cancel();
 
     _subMessages = _chatRepo
         .getMessages(roomId)
-        .listen(
-          (message) {
+        .listen((message) {
+          if (_isInChat == true) {
+      _markAsRead(roomId);
+    }
             emit(state.copyWith(message: message, error: null));
           },
           onError: (e) {
@@ -74,5 +78,21 @@ class ChatCubit extends Cubit<ChatState> {
             );
           },
         );
+    
   }
+
+  void _markAsRead(String roomId) async {
+    try {
+      await _chatRepo.markMessageAsRead(roomId, currentUserId);
+    } catch (e) {
+      debugPrint("error accure in $e");
+    }
+  }
+
+  Future<void> leaveChat() async {
+    _isInChat = false;
+  }
+
+
+
 }

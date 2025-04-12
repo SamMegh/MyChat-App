@@ -38,6 +38,7 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
   @override
   void dispose() {
     inputTextController.dispose();
+    _chatCubit.leaveChat();
     super.dispose();
   }
 
@@ -169,20 +170,22 @@ class MessageBubble extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment:
+              isMe ? CrossAxisAlignment.start : CrossAxisAlignment.end,
           children: [
             Text(message.messageContent, style: TextStyle(fontSize: 16)),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  DateFormat('hh:mm a').format(message.timestamp.toDate()), 
-                  style: TextStyle(fontSize: 12)),
+                  DateFormat('hh:mm a').format(message.timestamp.toDate()),
+                  style: TextStyle(fontSize: 10),
+                ),
                 SizedBox(width: isMe ? 5 : 0),
                 isMe
                     ? Icon(
                       Icons.done_all_rounded,
-                      size: 20,
+                      size: 15,
                       color:
                           message.status == MessageStatus.read
                               ? Theme.of(context).primaryColor
