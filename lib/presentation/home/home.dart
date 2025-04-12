@@ -121,7 +121,7 @@ class _HomeState extends State<Home> {
         stream: _chatRepo.getMyChatRooms(_currentUserId),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            print("error ${snapshot.error}");
+            debugPrint("error ${snapshot.error}");
             return Center(
               child: Text("Something went Worong! ${snapshot.error} "),
             );

@@ -10,21 +10,18 @@ class ContactRepo extends BaseRepo {
     return await FlutterContacts.requestPermission();
   }
 
- String _cleanPhoneNumber(String number) {  
-  String cleaned = number.replaceAll(RegExp(r'[^\d+]'), "");  
-  if (!cleaned.startsWith("+") && cleaned.length == 10) {
-    cleaned = "+91$cleaned";
-  }
+  String _cleanPhoneNumber(String number) {
+    String cleaned = number.replaceAll(RegExp(r'[^\d+]'), "");
+    if (!cleaned.startsWith("+") && cleaned.length == 10) {
+      cleaned = "+91$cleaned";
+    }
 
- 
-  return cleaned;
-}
+    return cleaned;
+  }
 
   Future<List<Map<String, dynamic>>> getRegisteredContact() async {
     try {
-      final contacts = await FlutterContacts.getContacts(
-        withProperties: true,
-      );
+      final contacts = await FlutterContacts.getContacts(withProperties: true);
       final phoneNumbers =
           contacts
               .where((contact) => contact.phones.isNotEmpty)
@@ -33,15 +30,21 @@ class ContactRepo extends BaseRepo {
                   'name': contact.displayName,
                   'phoneNumber': _cleanPhoneNumber(contact.phones.first.number),
                 },
-              ).toSet()
+              )
+              .toSet()
               .toList();
       final usersnapshoot = await firestore.collection("users").get();
-      final registeredUsers = usersnapshoot.docs.map((doc) {
-  final user = UserModel.formFirestore(doc);
-  user.phoneNumber = _cleanPhoneNumber(user.phoneNumber); // ✅ Normalize Firestore number
-  return user;
-}).where((user) => user.phoneNumber.isNotEmpty).toList();
-
+      final registeredUsers =
+          usersnapshoot.docs
+              .map((doc) {
+                final user = UserModel.formFirestore(doc);
+                user.phoneNumber = _cleanPhoneNumber(
+                  user.phoneNumber,
+                ); 
+                return user;
+              })
+              .where((user) => user.phoneNumber.isNotEmpty)
+              .toList();
       final matchedContact =
           phoneNumbers
               .where((contact) {
