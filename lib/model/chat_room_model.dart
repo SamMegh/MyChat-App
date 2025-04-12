@@ -33,9 +33,9 @@ class ChatRoomModel {
     return ChatRoomModel(
       id: doc.id,
       participants: List<String>.from(data['participants']),
-      lastMessage: data['lastMessage']??"",
-      lastMessageSender: data['lastMessageSender']??"",
-      lastMessageTime: data['lastMessageTime']??"",
+      lastMessage: data['lastMessage'],
+      lastMessageSender: data['lastMessageSender'],
+      lastMessageTime: data['lastMessageTime'],
       lastReadTime: Map<String,Timestamp>.from(data['lastReadTime']??{}),
       participantsName: Map<String,String>.from(data["participantsName"]??{}) ,
       isTyping: data['isTyping']??false,

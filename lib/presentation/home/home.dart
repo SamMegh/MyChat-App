@@ -3,9 +3,12 @@ import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:mychat/logic/cubit/auth/auth_cubit.dart';
 import 'package:mychat/presentation/chat/chat_message_screen.dart';
 import 'package:mychat/presentation/screens/auth/login.dart';
+import 'package:mychat/repositories/auth_repo.dart';
+import 'package:mychat/repositories/chat_repo.dart';
 import 'package:mychat/repositories/contact_repo.dart';
 import 'package:mychat/routes/app_routor.dart';
 import 'package:mychat/services/service_locator.dart';
+import 'package:mychat/widget/home_tiles.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -16,10 +19,14 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   late final ContactRepo _contactRepo;
+  late final ChatRepo _chatRepo;
+  late final String _currentUserId;
 
   @override
   void initState() {
     _contactRepo = getIt<ContactRepo>();
+    _chatRepo = getIt<ChatRepo>();
+    _currentUserId = getIt<AuthRepo>().currentUser?.uid ?? "";
     super.initState();
   }
 
@@ -110,23 +117,62 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      body: const Center(child: Text("you are login")),
+      body: StreamBuilder(
+        stream: _chatRepo.getMyChatRooms(_currentUserId),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            print("error ${snapshot.error}");
+            return Center(
+              child: Text("Something went Worong! ${snapshot.error} "),
+            );
+          }
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+          final chats = snapshot.data!;
+          if (chats.isEmpty) {
+            return Center(child: Text("No Recent Chat Found"));
+          }
+          return ListView.builder(
+            itemCount: chats.length,
+            itemBuilder: (context, index) {
+              final chat = chats[index];
+              return HomeTiles(
+                chat: chat,
+                currentUserId: _currentUserId,
+                onTap: () {
+                  final otherUserId = (chat.participants.where(
+                    (id) => id != _currentUserId,
+                  )).toString().replaceAll("(", "").replaceAll(")", "");
+                  final otherUserName =
+                      chat.participantsName?[otherUserId] ?? "Unknown";
+                  getIt<AppRoutor>().push(ChatMessageScreen(
+                    receiverId: otherUserId,
+                    receiverName: otherUserName,
+                  ));
+                },
+              );
+            },
+          );
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final granted = await FlutterContacts.requestPermission();
           if (!granted) {
             // Optional: Show custom message or dialog
             ScaffoldMessenger.of(context).removeCurrentSnackBar();
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text("Permission Denied"),
-            behavior: SnackBarBehavior.floating,
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(16),
-  ),
-  backgroundColor: Colors.black87,
-  margin: EdgeInsets.all(8),
-));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Permission Denied"),
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                backgroundColor: Colors.black87,
+                margin: EdgeInsets.all(8),
+              ),
+            );
           } else {
             _showContactList(context);
             // Load contacts here

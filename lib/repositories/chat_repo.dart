@@ -98,4 +98,11 @@ class ChatRepo extends BaseRepo {
     final snapshot = await query.get();
     return snapshot.docs.map((doc) => ChatMessage.fromFireStore(doc)).toList();
   }
+
+  Stream<List<ChatRoomModel>> getMyChatRooms(String userid){
+return _chatRooms.where("participants",arrayContains: userid).orderBy('lastMessageTime', descending: true).snapshots().map((snapshot)=>snapshot.docs.map((doc)=>ChatRoomModel.fromFirestore(doc)).toList());
+  }
+
+
+
 }
