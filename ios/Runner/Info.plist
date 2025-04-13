@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Mychat</string>
+	<string>MyChat</string>
 	<key>NSContactsUsageDescription</key>
     <string>Reason we need access to the contact list</string>
 	<key>CFBundleExecutable</key>

@@ -141,7 +141,35 @@ class ChatRepo extends BaseRepo {
     }
   }
 
+  Stream<Map<String, dynamic>> getOnlineUser(String userID) {
+    return firestore.collection("users").doc(userID).snapshots().map((
+      snapshot,
+    ) {
+      final data = snapshot.data();
+      return {
+        "isOnline": data?['isOnline'] ?? false,
+        "lastSeen": data?['lastSeen'],
+      };
+    });
+  }
 
+  Future<void> updateUserOnlineStatus(String userID, bool isOnline) async {
+    await firestore.collection("users").doc(userID).update({
+      "isOnline": isOnline,
+      "lastSeen": Timestamp.now(),
+    });
+  }
 
-
+  Stream<Map<String, dynamic>> getTypingStatus(String roomId) {
+    return _chatRooms.doc(roomId).snapshots().map((snapshot) {
+      if (!snapshot.exists) {
+        return {"isTyping": false, "typingUser": null};
+      }
+      final data = snapshot.data() as Map<String, dynamic>;
+      return {
+        "isTyping": data['isTyping'] ?? false,
+        "typingUser": data['typingUser'],
+      };
+    });
+  }
 }

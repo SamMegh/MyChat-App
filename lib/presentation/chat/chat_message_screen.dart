@@ -57,13 +57,45 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(widget.receiverName, style: TextStyle(fontSize: 16)),
-                Text(
-                  "Online",
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
+                BlocBuilder<ChatCubit, ChatState>(
+                  bloc: _chatCubit,
+                  builder: (context, state) {
+                    if (state.isReceiverTyping) {
+                      return Text(
+                        "Typing",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                        ),
+                      );
+                    }
+                    if (state.isReceiverOnline) {
+                      return Text(
+                        "Online",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey.shade600,
+                        ),
+                      );
+                    }
+                    if (state.recevierLastSeen != null) {
+                      final lastSeen = state.recevierLastSeen!.toDate();
+                      return Padding(
+                        padding: const EdgeInsets.only(top:3.0),
+                        child: Text(
+                          "Last Seen at ${DateFormat('h:mm a').format(lastSeen)}",
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                          ),
+                        ),
+                      );
+                    }
+                    return SizedBox();
+                  },
                 ),
               ],
             ),
@@ -171,7 +203,7 @@ class MessageBubble extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment:
-              isMe ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             Text(message.messageContent, style: TextStyle(fontSize: 16)),
             Row(

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mychat/logic/cubit/chat/chat_state.dart';
@@ -9,6 +10,8 @@ class ChatCubit extends Cubit<ChatState> {
   final String currentUserId;
   bool _isInChat = false;
   StreamSubscription? _subMessages;
+  StreamSubscription? _subIsOnline;
+  StreamSubscription? _subIsTyping;
   ChatCubit({required this.currentUserId, required ChatRepo chatrepo})
     : _chatRepo = chatrepo,
       super(const ChatState());
@@ -29,6 +32,10 @@ class ChatCubit extends Cubit<ChatState> {
         ),
       );
       _getMessges(chatroom.id);
+      _subToUserTyping(chatroom.id);
+      _subToOnlineStatus(reciverId);
+
+      await _chatRepo.updateUserOnlineStatus(currentUserId, true);
     } catch (e) {
       emit(
         state.copyWith(
@@ -63,10 +70,11 @@ class ChatCubit extends Cubit<ChatState> {
 
     _subMessages = _chatRepo
         .getMessages(roomId)
-        .listen((message) {
-          if (_isInChat == true) {
-      _markAsRead(roomId);
-    }
+        .listen(
+          (message) {
+            if (_isInChat == true) {
+              _markAsRead(roomId);
+            }
             emit(state.copyWith(message: message, error: null));
           },
           onError: (e) {
@@ -78,7 +86,6 @@ class ChatCubit extends Cubit<ChatState> {
             );
           },
         );
-    
   }
 
   void _markAsRead(String roomId) async {
@@ -93,6 +100,44 @@ class ChatCubit extends Cubit<ChatState> {
     _isInChat = false;
   }
 
+  void _subToOnlineStatus(String userId) {
+    _subIsOnline?.cancel();
+    _subIsOnline = _chatRepo
+        .getOnlineUser(userId)
+        .listen(
+          (status) {
+            final isOnline = status['isOnline'] as bool;
+            final lastSeen = status['lastSeen'] as Timestamp;
+            emit(
+              state.copyWith(
+                isReceiverOnline: isOnline,
+                recevierLastSeen: lastSeen,
+              ),
+            );
+          },
+          onError: (e) {
+            debugPrint("got an error while getting online status of a user $e");
+          },
+        );
+  }
 
-
+  void _subToUserTyping(String roomId) {
+    _subIsTyping?.cancel();
+    _subIsTyping = _chatRepo
+        .getTypingStatus(roomId)
+        .listen(
+          (status) {
+            final isTyping = status['isTyping'] as bool;
+            final typingUser = status['typingUser'] as String?;
+            emit(
+              state.copyWith(
+                isReceiverTyping: isTyping && typingUser != currentUserId,
+              ),
+            );
+          },
+          onError: (e) {
+            debugPrint("got an error while getting typing status of a user $e");
+          },
+        );
+  }
 }
