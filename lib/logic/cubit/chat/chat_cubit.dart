@@ -79,7 +79,7 @@ class ChatCubit extends Cubit<ChatState> {
             if (_isInChat == true) {
               _markAsRead(roomId);
             }
-            emit(state.copyWith(message: message, error: null));
+            emit(state.copyWith(message: List.from(message), error: null));
           },
           onError: (e) {
             emit(
@@ -201,6 +201,47 @@ class ChatCubit extends Cubit<ChatState> {
       await _chatRepo.unblockTheUser(currentUserId, userId);
     } catch (e) {
       emit(state.copyWith(error: 'failed to unblock user $e'));
+    }
+  }
+
+  Future<void> loadMoreMessages() async {
+    if (state.status == ChatStatus.loading ||
+        state.message.isEmpty ||
+        !state.hasMoreMessages ||
+        state.isLoadMoreMessages) {
+      return;
+    }
+    try {
+      emit(state.copyWith(isLoadMoreMessages: true));
+      final lastMessage = state.message.last;
+      final lastMessageDoc =
+          await _chatRepo
+              .getChatRoomMessage(state.chatRoomId!)
+              .doc(lastMessage.id)
+              .get();
+      final moreMessages = await _chatRepo.getMoreMessage(
+        state.chatRoomId!,
+        lastSnapshot: lastMessageDoc,
+      );
+      if (moreMessages.isEmpty) {
+        emit(state.copyWith(isLoadMoreMessages: false, hasMoreMessages: false));
+        return;
+      }
+      emit(
+        state.copyWith(
+          message: [...state.message, ...moreMessages],
+          isLoadMoreMessages: false,
+          hasMoreMessages: moreMessages.length >= 20,
+        ),
+      );
+    } catch (e) {
+      debugPrint("unable to fatch More Messages $e");
+      emit(
+        state.copyWith(
+          error: "unable to fatch More Messages $e",
+          isLoadMoreMessages: false,
+        ),
+      );
     }
   }
 }

@@ -22,11 +22,14 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
   TextEditingController inputTextController = TextEditingController();
   late final ChatCubit _chatCubit;
   bool _isComposing = false;
+  bool _showEmoji = false;
+  final _scrollController = ScrollController();
   @override
   void initState() {
     _chatCubit = getIt<ChatCubit>();
     _chatCubit.enterChatRoom(widget.receiverId);
     inputTextController.addListener(_isUserTyping);
+    _scrollController.addListener(_onScroll);
     super.initState();
   }
 
@@ -35,6 +38,24 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
     if (content == "") return;
     inputTextController.clear();
     _chatCubit.sendMessage(content: content);
+    _scrollToBottom();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _chatCubit.loadMoreMessages();
+    }
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
   }
 
   void _isUserTyping() {
@@ -52,6 +73,7 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
   @override
   void dispose() {
     inputTextController.dispose();
+    _scrollController.dispose();
     _chatCubit.leaveChat();
     super.dispose();
   }
@@ -185,19 +207,29 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
             return Center(child: Text("Unable to load Message"));
           }
           if (state.status == ChatStatus.loading) {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator.adaptive());
           }
           return Column(
             children: [
-              if(state.isIBlocked)
-              Container(
-              padding: EdgeInsets.all(8),  
-              color: Colors.red.withOpacity(0.1),
-              child: Text("You Have been blocked",style: TextStyle(color: Colors.red),
-              textAlign: TextAlign.center),),
+              if (state.isLoadMoreMessages)
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: CircularProgressIndicator.adaptive(),
+                ),
+              if (state.isIBlocked)
+                Container(
+                  padding: EdgeInsets.all(8),
+                  color: Colors.red.withOpacity(0.1),
+                  child: Text(
+                    "You Have been blocked",
+                    style: TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               SizedBox(height: 10),
               Expanded(
                 child: ListView.builder(
+                  controller: _scrollController,
                   reverse: true,
                   itemCount: state.message.length,
                   itemBuilder: (context, index) {
@@ -207,46 +239,74 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
                   },
                 ),
               ),
-              (state.isIBlocked || state.isUserBlocked)?Expanded(child: Container(child: state.isIBlocked?Text("You are Blocked"):Text("You blocked this user"),)):
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.emoji_emotions_outlined),
+              (state.isIBlocked || state.isUserBlocked)
+                  ? Expanded(
+                    child: Container(
+                      child:
+                          state.isIBlocked
+                              ? Text(
+                                "You are Blocked",
+                                textAlign: TextAlign.end,
+                              )
+                              : Text("You blocked this user"),
                     ),
-                    SizedBox(width: 3),
-                    Expanded(
-                      child: TextField(
-                        controller: inputTextController,
-                        textCapitalization: TextCapitalization.sentences,
-                        keyboardType: TextInputType.multiline,
-                        maxLines: 5,
-                        minLines: 1,
-                        decoration: InputDecoration(
-                          hintText: "Message...",
-                          filled: true,
-                          fillColor: Theme.of(context).cardColor,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
-                            borderSide: BorderSide.none,
+                  )
+                  : Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            setState((){
+                            _showEmoji = !_showEmoji;
+                            if (_showEmoji) {
+                              FocusScope.of(context).unfocus();
+                            }
+                              
+                            });
+                          },
+                          icon: Icon(Icons.emoji_emotions_outlined),
+                        ),
+                        SizedBox(width: 3),
+                        Expanded(
+                          child: TextField(
+                            onTap: (){
+                              if(_showEmoji){
+                              setState(() {
+                                _showEmoji = false;
+                              });}
+                            },
+                            controller: inputTextController,
+                            textCapitalization: TextCapitalization.sentences,
+                            keyboardType: TextInputType.multiline,
+                            maxLines: 5,
+                            minLines: 1,
+                            decoration: InputDecoration(
+                              hintText: "Message...",
+                              filled: true,
+                              fillColor: Theme.of(context).cardColor,
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(24),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                        SizedBox(width: 3),
+                        IconButton(
+                          onPressed: _handleSendMessage,
+                          icon: Icon(Icons.send),
+                        ),
+                      ],
                     ),
-                    SizedBox(width: 3),
-                    IconButton(
-                      onPressed: _handleSendMessage,
-                      icon: Icon(Icons.send),
-                    ),
-                  ],
-                ),
-              ),
+
+
+
+                  ),
               SizedBox(height: 3),
             ],
           );

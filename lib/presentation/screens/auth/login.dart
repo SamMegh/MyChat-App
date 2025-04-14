@@ -155,9 +155,7 @@ class _LoginScreen extends State<LoginScreen> {
                       Center(
                         child:
                             state.status == AuthStatus.loading
-                                ? CircularProgressIndicator(
-                                  color: Theme.of(context).primaryColor,
-                                )
+                                ? CircularProgressIndicator.adaptive()
                                 : CoustomButton(
                                   text: "Login",
                                   onPressed: handlelogin,

@@ -219,9 +219,7 @@ class _SignupScreen extends State<SignupScreen> {
                         child:
                             state.status == AuthStatus.loading
                                 ? Center(
-                                  child: CircularProgressIndicator(
-                                    color: Theme.of(context).primaryColor,
-                                  ),
+                                  child: CircularProgressIndicator.adaptive(),
                                 )
                                 : CoustomButton(
                                   onPressed: handleSignup,

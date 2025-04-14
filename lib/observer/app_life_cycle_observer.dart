@@ -15,9 +15,6 @@ class AppLifeCycleObserver extends WidgetsBindingObserver {
       case AppLifecycleState.paused:
       case AppLifecycleState.inactive:
       case AppLifecycleState.detached:
-        print(
-          '**************************************************************************************************************************'
-        );
         chatRepo.updateUserOnlineStatus(userId, false);
         break;
       case AppLifecycleState.resumed:

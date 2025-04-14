@@ -49,7 +49,7 @@ class _HomeState extends State<Home> {
                     return Center(child: Text("Error: ${snapshot.error}"));
                   }
                   if (!snapshot.hasData) {
-                    return Center(child: CircularProgressIndicator());
+                    return Center(child: CircularProgressIndicator.adaptive());
                   }
                   final contacts = snapshot.data!;
                   if (contacts.isEmpty) {
@@ -101,6 +101,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 2,
         title: Text(
           "Chats",
           style: Theme.of(
@@ -127,7 +128,7 @@ class _HomeState extends State<Home> {
             );
           }
           if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator.adaptive());
           }
           final chats = snapshot.data!;
           if (chats.isEmpty) {

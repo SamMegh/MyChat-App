@@ -21,10 +21,6 @@ void main() async {
   
   // Initialize Firebase with the provided options
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FlutterError.onError = (details) {
-  FlutterError.presentError(details);
-  print("Flutter error: ${details.exception}");
-};
 
   runApp(const MyApp());
 }
@@ -52,24 +48,27 @@ class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      navigatorKey: getIt<AppRoutor>().navgatorKey,
-      theme: AppTheme.lightTheme,
-      home: BlocBuilder<AuthCubit, AuthState>(
-          bloc: getIt<AuthCubit>(),
-          builder: (context, state) {
-            if (state.status == AuthStatus.initial) {
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              );
-            }
-            if (state.status == AuthStatus.authenticated) {
-              return const Home();
-            }
-            return const LoginScreen();
-          },
-        ),
+    return GestureDetector(
+      onTap: (){FocusManager.instance.primaryFocus!.unfocus();},
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        navigatorKey: getIt<AppRoutor>().navgatorKey,
+        theme: AppTheme.lightTheme,
+        home: BlocBuilder<AuthCubit, AuthState>(
+            bloc: getIt<AuthCubit>(),
+            builder: (context, state) {
+              if (state.status == AuthStatus.initial) {
+                return const Scaffold(
+                  body: Center(child: CircularProgressIndicator.adaptive()),
+                );
+              }
+              if (state.status == AuthStatus.authenticated) {
+                return const Home();
+              }
+              return const LoginScreen();
+            },
+          ),
+      ),
     );
   }
 }
