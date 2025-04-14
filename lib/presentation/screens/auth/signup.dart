@@ -232,26 +232,25 @@ class _SignupScreen extends State<SignupScreen> {
                       Center(
                         child: RichText(
                           text: TextSpan(
+                            style: Theme.of(context).textTheme.bodyLarge,
                             text: "Already have an account? ",
                             children: [
                               TextSpan(
                                 text: "Login",
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.bodyLarge?.copyWith(
-                                  color: Theme.of(context).primaryColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                recognizer:
-                                    TapGestureRecognizer()
-                                      ..onTap = () {
-                                        getIt<AppRoutor>().push(LoginScreen());
-                                      },
+                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      color: Theme.of(context).primaryColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    getIt<AppRoutor>().push(LoginScreen());
+                                  },
                               ),
                             ],
                           ),
                         ),
                       ),
+
                     ],
                   ),
                 ),

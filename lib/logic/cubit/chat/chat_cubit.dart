@@ -12,6 +12,7 @@ class ChatCubit extends Cubit<ChatState> {
   StreamSubscription? _subMessages;
   StreamSubscription? _subIsOnline;
   StreamSubscription? _subIsTyping;
+  Timer? typingTimer;
   ChatCubit({required this.currentUserId, required ChatRepo chatrepo})
     : _chatRepo = chatrepo,
       super(const ChatState());
@@ -139,5 +140,27 @@ class ChatCubit extends Cubit<ChatState> {
             debugPrint("got an error while getting typing status of a user $e");
           },
         );
+  }
+
+  void startTyping() {
+    if (state.chatRoomId == null) return;
+    typingTimer?.cancel();
+    _updateTypignStatus(true);
+    typingTimer = Timer(Duration(seconds: 3), () {
+      _updateTypignStatus(false);
+    });
+  }
+
+  Future<void> _updateTypignStatus(bool isTyping) async {
+    if (state.chatRoomId == null) return;
+    try {
+      await _chatRepo.updateTypingStatus(
+        state.chatRoomId!,
+        currentUserId,
+        isTyping,
+      );
+    } catch (e) {
+      debugPrint("error while update typing status $e");
+    }
   }
 }

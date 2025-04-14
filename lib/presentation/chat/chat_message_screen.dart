@@ -21,10 +21,12 @@ class ChatMessageScreen extends StatefulWidget {
 class _ChatMessageScreen extends State<ChatMessageScreen> {
   TextEditingController inputTextController = TextEditingController();
   late final ChatCubit _chatCubit;
+  bool _isComposing = false;
   @override
   void initState() {
     _chatCubit = getIt<ChatCubit>();
     _chatCubit.enterChatRoom(widget.receiverId);
+    inputTextController.addListener(_isUserTyping);
     super.initState();
   }
 
@@ -33,6 +35,18 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
     if (content == "") return;
     inputTextController.clear();
     _chatCubit.sendMessage(content: content);
+  }
+
+  void _isUserTyping() {
+    final isComposing = inputTextController.text.trim().isNotEmpty;
+    if (isComposing != _isComposing) {
+      setState(() {
+        _isComposing = isComposing;
+      });
+      if (isComposing) {
+        _chatCubit.startTyping();
+      }
+    }
   }
 
   @override
@@ -62,9 +76,9 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
                   builder: (context, state) {
                     if (state.isReceiverTyping) {
                       return Text(
-                        "Typing",
+                        "Typing...",
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: FontWeight.bold,
                           color: Colors.green,
                         ),
@@ -74,7 +88,7 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
                       return Text(
                         "Online",
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: FontWeight.bold,
                           color: Colors.grey.shade600,
                         ),
@@ -83,13 +97,13 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
                     if (state.recevierLastSeen != null) {
                       final lastSeen = state.recevierLastSeen!.toDate();
                       return Padding(
-                        padding: const EdgeInsets.only(top:3.0),
+                        padding: const EdgeInsets.only(top: 3.0),
                         child: Text(
                           "Last Seen at ${DateFormat('h:mm a').format(lastSeen)}",
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
-                            color: Colors.green,
+                            color: Colors.grey.shade600,
                           ),
                         ),
                       );
