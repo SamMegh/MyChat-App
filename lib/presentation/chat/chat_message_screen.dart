@@ -116,9 +116,65 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
           ],
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: Icon(Icons.more_vert),
+          BlocBuilder<ChatCubit, ChatState>(
+            bloc: _chatCubit,
+            builder: (context, state) {
+              if (state.isUserBlocked) {
+                return TextButton.icon(
+                  onPressed: () => _chatCubit.unblocUser(widget.receiverId),
+                  label: Text("UnBlock"),
+                  icon: Icon(Icons.block_outlined),
+                );
+              }
+              return PopupMenuButton<String>(
+                icon: Icon(Icons.more_vert_outlined),
+                onSelected: (value) async {
+                  if (value == "block") {
+                    final bool? confirm = await showDialog<bool>(
+                      context: context,
+                      builder:
+                          (context) => AlertDialog(
+                            title: Text(
+                              "Are you sure, You want to block ${widget.receiverName}",
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context, false);
+                                },
+                                child: const Text(
+                                  "Cencel",
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context, true);
+                                },
+                                child: Text(
+                                  "Block",
+                                  style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                    );
+                    if (confirm == true) {
+                      await _chatCubit.blocUser(widget.receiverId);
+                    }
+                  }
+                },
+                itemBuilder:
+                    (context) => <PopupMenuEntry<String>>[
+                      const PopupMenuItem(
+                        value: 'block',
+                        child: Text("Block User"),
+                      ),
+                    ],
+              );
+            },
           ),
         ],
       ),
@@ -133,6 +189,12 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
           }
           return Column(
             children: [
+              if(state.isIBlocked)
+              Container(
+              padding: EdgeInsets.all(8),  
+              color: Colors.red.withOpacity(0.1),
+              child: Text("You Have been blocked",style: TextStyle(color: Colors.red),
+              textAlign: TextAlign.center),),
               SizedBox(height: 10),
               Expanded(
                 child: ListView.builder(
@@ -145,6 +207,7 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
                   },
                 ),
               ),
+              (state.isIBlocked || state.isUserBlocked)?Expanded(child: Container(child: state.isIBlocked?Text("You are Blocked"):Text("You blocked this user"),)):
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(

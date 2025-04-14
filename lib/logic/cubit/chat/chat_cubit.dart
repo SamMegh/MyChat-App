@@ -12,6 +12,8 @@ class ChatCubit extends Cubit<ChatState> {
   StreamSubscription? _subMessages;
   StreamSubscription? _subIsOnline;
   StreamSubscription? _subIsTyping;
+  StreamSubscription? _subToBlockStatus;
+  StreamSubscription? _subIAmBlockStatus;
   Timer? typingTimer;
   ChatCubit({required this.currentUserId, required ChatRepo chatrepo})
     : _chatRepo = chatrepo,
@@ -35,6 +37,7 @@ class ChatCubit extends Cubit<ChatState> {
       _getMessges(chatroom.id);
       _subToUserTyping(chatroom.id);
       _subToOnlineStatus(reciverId);
+      _subtoBlockStatus(reciverId);
 
       await _chatRepo.updateUserOnlineStatus(currentUserId, true);
     } catch (e) {
@@ -142,6 +145,27 @@ class ChatCubit extends Cubit<ChatState> {
         );
   }
 
+  void _subtoBlockStatus(String otherUserId) {
+    _subToBlockStatus?.cancel();
+    _subToBlockStatus = _chatRepo
+        .isUserBlocked(currentUserId, otherUserId)
+        .listen(
+          (isBlocked) {
+            emit(state.copyWith(isUserBlocked: isBlocked));
+
+            _subIAmBlockStatus?.cancel();
+            _subIAmBlockStatus = _chatRepo
+                .isAmBlocked(currentUserId, otherUserId)
+                .listen((isBlocked) {
+                  emit(state.copyWith(isIBlocked: isBlocked));
+                });
+          },
+          onError: (e) {
+            debugPrint("got an error while sub to block $e");
+          },
+        );
+  }
+
   void startTyping() {
     if (state.chatRoomId == null) return;
     typingTimer?.cancel();
@@ -161,6 +185,22 @@ class ChatCubit extends Cubit<ChatState> {
       );
     } catch (e) {
       debugPrint("error while update typing status $e");
+    }
+  }
+
+  Future<void> blocUser(String userId) async {
+    try {
+      await _chatRepo.blockTheUser(currentUserId, userId);
+    } catch (e) {
+      emit(state.copyWith(error: 'failed to block user $e'));
+    }
+  }
+
+  Future<void> unblocUser(String userId) async {
+    try {
+      await _chatRepo.unblockTheUser(currentUserId, userId);
+    } catch (e) {
+      emit(state.copyWith(error: 'failed to unblock user $e'));
     }
   }
 }
