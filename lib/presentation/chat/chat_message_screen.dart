@@ -22,8 +22,8 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
   TextEditingController inputTextController = TextEditingController();
   late final ChatCubit _chatCubit;
   bool _isComposing = false;
-  bool _showEmoji = false;
   final _scrollController = ScrollController();
+
   @override
   void initState() {
     _chatCubit = getIt<ChatCubit>();
@@ -157,7 +157,7 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
                       builder:
                           (context) => AlertDialog(
                             title: Text(
-                              "Are you sure, You want to block ${widget.receiverName}",
+                              "Are you sure, You want to block ${widget.receiverName}?",
                             ),
                             actions: [
                               TextButton(
@@ -165,7 +165,7 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
                                   Navigator.pop(context, false);
                                 },
                                 child: const Text(
-                                  "Cencel",
+                                  "Cancel",
                                   style: TextStyle(color: Colors.red),
                                 ),
                               ),
@@ -189,12 +189,10 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
                   }
                 },
                 itemBuilder:
-                    (context) => <PopupMenuEntry<String>>[
-                      const PopupMenuItem(
-                        value: 'block',
-                        child: Text("Block User"),
-                      ),
-                    ],
+                    (context) => <PopupMenuEntry<String>>[const PopupMenuItem(
+                      value: 'block',
+                      child: Text("Block User"),
+                    ),],
               );
             },
           ),
@@ -242,40 +240,22 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
               (state.isIBlocked || state.isUserBlocked)
                   ? Expanded(
                     child: Container(
-                      child:
-                          state.isIBlocked
-                              ? Text(
-                                "You are Blocked",
-                                textAlign: TextAlign.end,
-                              )
-                              : Text("You blocked this user"),
+                      child: state.isIBlocked
+                          ? Text(
+                              "You are Blocked",
+                              textAlign: TextAlign.end,
+                            )
+                          : Text("You blocked this user"),
                     ),
                   )
                   : Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        IconButton(
-                          onPressed: () {
-                            setState((){
-                            _showEmoji = !_showEmoji;
-                            if (_showEmoji) {
-                              FocusScope.of(context).unfocus();
-                            }
-                              
-                            });
-                          },
-                          icon: Icon(Icons.emoji_emotions_outlined),
-                        ),
                         SizedBox(width: 3),
                         Expanded(
                           child: TextField(
-                            onTap: (){
-                              if(_showEmoji){
-                              setState(() {
-                                _showEmoji = false;
-                              });}
-                            },
+                            onTap: () {},
                             controller: inputTextController,
                             textCapitalization: TextCapitalization.sentences,
                             keyboardType: TextInputType.multiline,
@@ -303,11 +283,8 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
                         ),
                       ],
                     ),
-
-
-
                   ),
-              SizedBox(height: 3),
+                  SizedBox(height: 3),
             ],
           );
         },
