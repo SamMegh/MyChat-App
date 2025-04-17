@@ -8,31 +8,37 @@ class AuthCubit extends Cubit<AuthState> {
   final AuthRepo _authRepo;
   StreamSubscription<User?>? _authStateSubscription;
 
-  AuthCubit({required AuthRepo authrepo})
-    : _authRepo = authrepo,
-      super(const AuthState()) {
+  AuthCubit({
+    required AuthRepo authRepository,
+  })  : _authRepo = authRepository,
+        super(const AuthState()) {
     _init();
   }
+
   void _init() {
     emit(state.copyWith(status: AuthStatus.initial));
-    _authStateSubscription = _authRepo.authStateChanges.listen((user) async {
+
+    _authStateSubscription =
+        _authRepo.authStateChanges.listen((user) async {
       if (user != null) {
         try {
-          emit(state.copyWith(status: AuthStatus.loading));
           final userData = await _authRepo.getUserData(user.uid);
-          emit(
-            state.copyWith(status: AuthStatus.authenticated, user: userData),
-          );
+          emit(state.copyWith(
+            status: AuthStatus.authenticated,
+            user: userData,
+          ));
         } catch (e) {
           emit(state.copyWith(status: AuthStatus.error, error: e.toString()));
         }
       } else {
-        emit(
-          state.copyWith(status: AuthStatus.unauthenticated, user: null),
-        ); 
+        emit(state.copyWith(
+          status: AuthStatus.unauthenticated,
+          user: null,
+        ));
       }
     });
   }
+
 
   Future<void> logIn({required String email, required String password}) async {
     try {
@@ -69,9 +75,16 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> signOut() async {
     try {
       await _authRepo.signOut();
-      emit(state.copyWith(status: AuthStatus.unauthenticated, user: null));
+      emit(state.copyWith(status: AuthStatus.unauthenticated, user: null, ));
     } catch (e) {
       emit(state.copyWith(status: AuthStatus.error));
     }
   }
+
+    @override
+  Future<void> close() {
+    _authStateSubscription?.cancel();
+    return super.close();
+  }
+
 }

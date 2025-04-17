@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mychat/logic/cubit/auth/auth_cubit.dart';
 import 'package:mychat/logic/cubit/auth/auth_state.dart';
 import 'package:mychat/observer/app_life_cycle_observer.dart';
-import 'package:mychat/presentation/home/home.dart';
+import 'package:mychat/presentation/home/open_portal.dart';
 import 'package:mychat/repositories/chat_repo.dart';
 import 'package:mychat/routes/app_routor.dart';
 import 'package:mychat/services/service_locator.dart';
@@ -63,7 +63,7 @@ class _MyAppState extends State<MyApp> {
                 );
               }
               if (state.status == AuthStatus.authenticated) {
-                return const Home();
+                return const OpenPortal();
               }
               return const LoginScreen();
             },

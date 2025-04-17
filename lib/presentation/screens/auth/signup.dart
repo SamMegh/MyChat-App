@@ -6,7 +6,7 @@ import 'package:mychat/core/common/coustom_input_box.dart';
 import 'package:mychat/core/utils/ui_utils.dart';
 import 'package:mychat/logic/cubit/auth/auth_cubit.dart';
 import 'package:mychat/logic/cubit/auth/auth_state.dart';
-import 'package:mychat/presentation/home/home.dart';
+import 'package:mychat/presentation/home/open_portal.dart';
 import 'package:mychat/presentation/screens/auth/login.dart';
 import 'package:mychat/routes/app_routor.dart';
 import 'package:mychat/services/service_locator.dart';
@@ -131,7 +131,7 @@ class _SignupScreen extends State<SignupScreen> {
       bloc: getIt<AuthCubit>(),
       listener: (context, state) {
         if (state.status == AuthStatus.authenticated) {
-          getIt<AppRoutor>().pushAndRemoveUntil(Home());
+          getIt<AppRoutor>().pushAndRemoveUntil(OpenPortal());
         } else if (state.status == AuthStatus.error && state.error != null) {
           UiUtils().showSnackBar(context, message: state.error, isError: true);
         }
