@@ -27,7 +27,7 @@ class ProfilePic extends StatelessWidget {
           CircleAvatar(
             radius: 50,
             backgroundImage: NetworkImage(image),
-          ),
+          ),isShowPhotoUpload?
           InkWell(
             onTap: imageUploadBtnPress,
             child: CircleAvatar(
@@ -38,7 +38,7 @@ class ProfilePic extends StatelessWidget {
                 size: 20,
               ),
             ),
-          )
+          ):SizedBox()
         ],
       ),
     );
