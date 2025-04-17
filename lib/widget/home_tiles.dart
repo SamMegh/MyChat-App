@@ -26,7 +26,7 @@ class HomeTiles extends StatelessWidget {
     return ListTile(
       onTap: onTap,
       leading: CircleAvatar(
-        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.3),
+        backgroundColor: Color.fromRGBO(74, 144, 226, 0.3),
         child: Text(_getOtherUserId()[0].toString().toUpperCase()),
       ),
       title: Text(

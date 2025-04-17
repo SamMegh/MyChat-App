@@ -62,9 +62,7 @@ class _HomeState extends State<Home> {
                         final contact = contacts[index];
                         return ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: Theme.of(
-                              context,
-                            ).primaryColor.withOpacity(0.3),
+                            backgroundColor: Color.fromRGBO(74, 144, 226, 0.3),
                             child: Text(
                               contact['name'][0].toString().toUpperCase(),
                             ),
@@ -159,11 +157,13 @@ class _HomeState extends State<Home> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          final messenger = ScaffoldMessenger.of(context);
           final granted = await FlutterContacts.requestPermission();
+          if (!mounted) return;
           if (!granted) {
             // Optional: Show custom message or dialog
-            ScaffoldMessenger.of(context).removeCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(
+            messenger.removeCurrentSnackBar();
+            messenger.showSnackBar(
               SnackBar(
                 content: Text("Permission Denied"),
                 behavior: SnackBarBehavior.floating,

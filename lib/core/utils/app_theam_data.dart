@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   // Define the primary color (Light Blue)
-  static const primaryColor = Color(0xFF4A90E2);
+  static const primaryColor = Color.fromRGBO(74, 144, 226, 1);
 
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
@@ -34,7 +34,7 @@ class AppTheme {
     // Input Decoration
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: primaryColor.withOpacity(0.1),
+      fillColor: const Color.fromRGBO(74, 144, 226, 0.1),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: 16,
         vertical: 8,
@@ -59,7 +59,7 @@ class AppTheme {
 
     // Message Bubbles
     cardTheme: CardTheme(
-      color: primaryColor.withOpacity(0.1),
+      color: const Color.fromRGBO(74, 144, 226, 0.1),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),

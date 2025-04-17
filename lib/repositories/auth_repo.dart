@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/rendering.dart';
 import 'package:mychat/model/user_model.dart';
 import 'package:mychat/services/base_repo.dart';
 
@@ -94,10 +95,20 @@ class AuthRepo extends BaseRepo {
 
   Future<bool> checkEmailExists(String email) async {
     try {
-      final res = await auth.fetchSignInMethodsForEmail(email);
-      return res.isNotEmpty;
-    } catch (e) {
-      return false;
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: "dummyByDeveloperForByPassTheError",
+      );
+      return true;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        return false;
+      } else if (e.code == 'wrong-password') {
+        return true;
+      } else {
+        debugPrint('unknown error accure during finding email in database');
+        return false;
+      }
     }
   }
 

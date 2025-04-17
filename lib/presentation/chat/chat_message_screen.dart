@@ -85,7 +85,7 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
         title: Row(
           children: [
             CircleAvatar(
-              backgroundColor: Theme.of(context).primaryColor.withOpacity(0.3),
+              backgroundColor: Color.fromRGBO(74, 144, 226, 0.3),
               child: Text(widget.receiverName[0].toString().toUpperCase()),
             ),
             SizedBox(width: 15),
@@ -217,7 +217,7 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
               if (state.isIBlocked)
                 Container(
                   padding: EdgeInsets.all(8),
-                  color: Colors.red.withOpacity(0.1),
+                  color: const Color.fromRGBO(244, 67, 54, 0.1),
                   child: Text(
                     "You Have been blocked",
                     style: TextStyle(color: Colors.red),
@@ -227,6 +227,7 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
               SizedBox(height: 10),
               Expanded(
                 child: ListView.builder(
+                  physics: BouncingScrollPhysics(),
                   controller: _scrollController,
                   reverse: true,
                   itemCount: state.message.length,
@@ -311,7 +312,7 @@ class MessageBubble extends StatelessWidget {
         decoration: BoxDecoration(
           color:
               isMe
-                  ? Theme.of(context).primaryColor.withOpacity(0.4)
+                  ? Color.fromRGBO(74, 144, 226, 0.4)
                   : Colors.grey.shade300,
           borderRadius: BorderRadius.circular(16),
         ),
