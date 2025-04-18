@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
-import 'package:mychat/logic/cubit/auth/auth_cubit.dart';
 import 'package:mychat/presentation/chat/chat_message_screen.dart';
-import 'package:mychat/presentation/screens/auth/login.dart';
 import 'package:mychat/repositories/auth_repo.dart';
 import 'package:mychat/repositories/chat_repo.dart';
 import 'package:mychat/repositories/contact_repo.dart';
@@ -106,16 +104,8 @@ class _HomeState extends State<Home> {
             context,
           ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await getIt<AuthCubit>().signOut();
-              getIt<AppRoutor>().pushAndRemoveUntil(LoginScreen());
-            },
-          ),
-        ],
       ),
+      
       body: StreamBuilder(
         stream: _chatRepo.getMyChatRooms(_currentUserId),
         builder: (context, snapshot) {
@@ -155,6 +145,7 @@ class _HomeState extends State<Home> {
           );
         },
       ),
+      
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final messenger = ScaffoldMessenger.of(context);

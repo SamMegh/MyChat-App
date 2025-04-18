@@ -11,17 +11,19 @@ class UserModel {
   final Timestamp createdAt;
   final String? fcmToken;
   final List<String> blockedUsers;
+  final String profilePicUrl;
   UserModel({
     required this.uid,
     required this.fullName,
     required this.userName,
-    required this.email,  
+    required this.email,
     required this.phoneNumber,
     this.isOnline = false,
     Timestamp? lastSeen,
     Timestamp? createdAt,
     this.fcmToken,
     this.blockedUsers = const [],
+    this.profilePicUrl='',
   }) : lastSeen = lastSeen ?? Timestamp.now(),
        createdAt = createdAt ?? Timestamp.now();
 
@@ -36,6 +38,7 @@ class UserModel {
     Timestamp? createdAt,
     String? fcmToken,
     List<String>? blockedUsers,
+    String? profilePicUrl,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -48,6 +51,7 @@ class UserModel {
       createdAt: createdAt ?? this.createdAt,
       fcmToken: fcmToken ?? this.fcmToken,
       blockedUsers: blockedUsers ?? this.blockedUsers,
+      profilePicUrl:profilePicUrl??this.profilePicUrl
     );
   }
 
@@ -55,14 +59,15 @@ class UserModel {
     final data = doc.data() as Map<String, dynamic>;
     return UserModel(
       uid: doc.id,
-      fullName: data['fullName']??"",
-      userName: data['userName']??"",
-      email: data['email']??"",
-      phoneNumber: data['phoneNumber']??"",
+      fullName: data['fullName'] ?? "",
+      userName: data['userName'] ?? "",
+      email: data['email'] ?? "",
+      phoneNumber: data['phoneNumber'] ?? "",
       fcmToken: data['fcmToken'],
-      lastSeen: data['lastSeen']?? Timestamp.now(),
-      createdAt: data['createdAt']??Timestamp.now(),
+      lastSeen: data['lastSeen'] ?? Timestamp.now(),
+      createdAt: data['createdAt'] ?? Timestamp.now(),
       blockedUsers: List<String>.from(data['blockedUsers']),
+      profilePicUrl:data['profilePicUrl']??""
     );
   }
 
@@ -77,6 +82,7 @@ class UserModel {
       "createdAt": createdAt,
       "fcmToken": fcmToken,
       "blockedUsers": blockedUsers,
+      "profilePicUrl":profilePicUrl
     };
   }
 }
