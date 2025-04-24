@@ -253,6 +253,7 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
                     final isMe = message.senderId == _chatCubit.currentUserId;
                     return SizedBox(
                       width: double.infinity,
+                      key: ValueKey(message.id),
                       child:
                           isMe
                               ? SwipeTo(
