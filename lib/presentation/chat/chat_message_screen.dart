@@ -25,6 +25,7 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
   bool _isComposing = false;
   bool _isReply = false;
   String _replyText = '';
+  String _replyUserId = '';
   final _scrollController = ScrollController();
 
   @override
@@ -40,7 +41,17 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
     final content = inputTextController.text.trim();
     if (content == "") return;
     inputTextController.clear();
-    _chatCubit.sendMessage(content: content);
+    _chatCubit.sendMessage(
+      content: content,
+      isReply: _isReply,
+      replyContent: _replyText,
+      replyUserId: _replyUserId,
+    );
+    setState(() {
+      _isReply = false;
+      _replyText = '';
+      _replyUserId = '';
+    });
     _scrollToBottom();
   }
 
@@ -246,8 +257,8 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
                               ? SwipeTo(
                                 onLeftSwipe: (details) {
                                   setState(() {
-                                    _replyText = '';
                                     _isReply = true;
+                                    _replyUserId = message.senderId.toString();
                                     _replyText =
                                         message.messageContent.toString();
                                   });
@@ -260,8 +271,8 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
                               : SwipeTo(
                                 onRightSwipe: (details) {
                                   setState(() {
-                                    _replyText = '';
                                     _isReply = true;
+                                    _replyUserId = message.senderId.toString();
                                     _replyText =
                                         message.messageContent.toString();
                                   });
@@ -329,6 +340,7 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
                                         setState(() {
                                           _isReply = false;
                                           _replyText = '';
+                                          _replyUserId = '';
                                         });
                                       },
                                       icon: const Icon(Icons.close_outlined),
