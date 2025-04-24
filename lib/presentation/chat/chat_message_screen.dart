@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -266,6 +267,7 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
                                 child: MessageBubble(
                                   message: message,
                                   isMe: isMe,
+                                  receiverName:widget.receiverName
                                 ),
                               )
                               : SwipeTo(
@@ -280,6 +282,7 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
                                 child: MessageBubble(
                                   message: message,
                                   isMe: isMe,
+                                  receiverName: widget.receiverName,
                                 ),
                               ),
                     );
@@ -401,7 +404,8 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
 class MessageBubble extends StatelessWidget {
   final ChatMessage message;
   final bool isMe;
-  const MessageBubble({super.key, required this.message, required this.isMe});
+  final String receiverName;
+  const MessageBubble({super.key, required this.message, required this.isMe, required this.receiverName});
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -415,14 +419,50 @@ class MessageBubble extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color:
-              isMe ? Color.fromRGBO(74, 144, 226, 0.4) : Colors.grey.shade300,
+              isMe ? Color.fromRGBO(74, 145, 226, 0.211) : Colors.grey.shade300,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
           crossAxisAlignment:
               isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
-            Text(message.messageContent, style: TextStyle(fontSize: 16)),
+            SizedBox(
+              child: Column(
+                crossAxisAlignment:
+                    isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                children: [
+                  (message.isReply!)
+                      ? Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color:
+                              isMe
+                                  ? Color.fromRGBO(92, 127, 167, 0.4)
+                                  : Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            (message.replyUserId ==
+                                    FirebaseAuth.instance.currentUser!.uid)
+                                ? Text("you",
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryColor
+                                ),)
+                                : Text(receiverName.toString(),style: TextStyle(
+                                  color: Colors.grey
+                                ),),
+                            Text(message.replyContent.toString()),
+                          ],
+                        ),
+                      )
+                      : SizedBox(),
+                  Text(message.messageContent, style: TextStyle(fontSize: 16)),
+                ],
+              ),
+            ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
