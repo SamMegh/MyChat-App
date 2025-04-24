@@ -50,7 +50,9 @@ class ChatCubit extends Cubit<ChatState> {
     }
   }
 
-  void sendMessage({required content}) async {
+  void sendMessage({
+    required content,
+  }) async {
     if (state.chatRoomId == null) return;
     try {
       await _chatRepo.sendMessage(
@@ -58,6 +60,7 @@ class ChatCubit extends Cubit<ChatState> {
         senderId: currentUserId,
         reciverId: state.ricevierId!,
         content: content,
+       
       );
     } catch (e) {
       emit(

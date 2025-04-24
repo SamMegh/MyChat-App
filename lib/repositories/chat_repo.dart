@@ -49,6 +49,9 @@ class ChatRepo extends BaseRepo {
     required String senderId,
     required String reciverId,
     required String content,
+    bool? isReply,
+    String? replyUserId,
+    String? replyContent,
     Messagetype type = Messagetype.text,
   }) async {
     final batch = firestore.batch();
@@ -63,6 +66,10 @@ class ChatRepo extends BaseRepo {
       messageContent: content,
       timestamp: Timestamp.now(),
       readBy: [senderId],
+      isReply: isReply,
+      replyUserId: replyUserId,
+      replyContent: replyContent
+
     );
     batch.set(messagedoc, message.toMap());
     batch.update(_chatRooms.doc(roomId), {

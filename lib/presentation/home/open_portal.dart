@@ -14,7 +14,7 @@ class OpenPortal extends StatefulWidget {
 }
 
 class _OpenPortalState extends State<OpenPortal> {
-  int _currentIndex = 1;
+  int _currentIndex = 0;
   void onTap(int i) {
     _currentIndex = i;
     setState(() {});

@@ -5,6 +5,7 @@ import 'package:mychat/logic/cubit/chat/chat_cubit.dart';
 import 'package:mychat/logic/cubit/chat/chat_state.dart';
 import 'package:mychat/model/chat_message_model.dart';
 import 'package:mychat/services/service_locator.dart';
+import 'package:swipe_to/swipe_to.dart';
 
 class ChatMessageScreen extends StatefulWidget {
   final String receiverId;
@@ -22,6 +23,8 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
   TextEditingController inputTextController = TextEditingController();
   late final ChatCubit _chatCubit;
   bool _isComposing = false;
+  bool _isReply = false;
+  String _replyText = '';
   final _scrollController = ScrollController();
 
   @override
@@ -189,10 +192,12 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
                   }
                 },
                 itemBuilder:
-                    (context) => <PopupMenuEntry<String>>[const PopupMenuItem(
-                      value: 'block',
-                      child: Text("Block User"),
-                    ),],
+                    (context) => <PopupMenuEntry<String>>[
+                      const PopupMenuItem(
+                        value: 'block',
+                        child: Text("Block User"),
+                      ),
+                    ],
               );
             },
           ),
@@ -234,58 +239,145 @@ class _ChatMessageScreen extends State<ChatMessageScreen> {
                   itemBuilder: (context, index) {
                     final message = state.message[index];
                     final isMe = message.senderId == _chatCubit.currentUserId;
-                    return MessageBubble(message: message, isMe: isMe);
+                    return SizedBox(
+                      width: double.infinity,
+                      child:
+                          isMe
+                              ? SwipeTo(
+                                onLeftSwipe: (details) {
+                                  setState(() {
+                                    _replyText = '';
+                                    _isReply = true;
+                                    _replyText =
+                                        message.messageContent.toString();
+                                  });
+                                },
+                                child: MessageBubble(
+                                  message: message,
+                                  isMe: isMe,
+                                ),
+                              )
+                              : SwipeTo(
+                                onRightSwipe: (details) {
+                                  setState(() {
+                                    _replyText = '';
+                                    _isReply = true;
+                                    _replyText =
+                                        message.messageContent.toString();
+                                  });
+                                },
+                                child: MessageBubble(
+                                  message: message,
+                                  isMe: isMe,
+                                ),
+                              ),
+                    );
                   },
                 ),
               ),
               (state.isIBlocked || state.isUserBlocked)
                   ? Expanded(
                     child: Container(
-                      child: state.isIBlocked
-                          ? Text(
-                              "You are Blocked",
-                              textAlign: TextAlign.end,
-                            )
-                          : Text("You blocked this user"),
+                      child:
+                          state.isIBlocked
+                              ? Text(
+                                "You are Blocked",
+                                textAlign: TextAlign.end,
+                              )
+                              : Text("You blocked this user"),
                     ),
                   )
                   : Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Row(
+                    child: Column(
                       children: [
-                        SizedBox(width: 3),
-                        Expanded(
-                          child: TextField(
-                            onTap: () {},
-                            controller: inputTextController,
-                            textCapitalization: TextCapitalization.sentences,
-                            keyboardType: TextInputType.multiline,
-                            maxLines: 5,
-                            minLines: 1,
-                            decoration: InputDecoration(
-                              hintText: "Message...",
-                              filled: true,
-                              fillColor: Theme.of(context).cardColor,
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
+                        _isReply
+                            ? Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade300,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(15),
+                                  topRight: Radius.circular(15),
+                                ),
                               ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(24),
-                                borderSide: BorderSide.none,
+                              padding: const EdgeInsets.all(12),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade500,
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: Text(
+                                        _replyText,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 25,
+                                    child: IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _isReply = false;
+                                          _replyText = '';
+                                        });
+                                      },
+                                      icon: const Icon(Icons.close_outlined),
+                                      iconSize: 20,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                            : const SizedBox(),
+
+                        Row(
+                          children: [
+                            SizedBox(width: 3),
+                            Expanded(
+                              child: TextField(
+                                onTap: () {},
+                                controller: inputTextController,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
+                                keyboardType: TextInputType.multiline,
+                                maxLines: 5,
+                                minLines: 1,
+                                decoration: InputDecoration(
+                                  hintText: "Message...",
+                                  filled: true,
+                                  fillColor: Theme.of(context).cardColor,
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(24),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                        SizedBox(width: 3),
-                        IconButton(
-                          onPressed: _handleSendMessage,
-                          icon: Icon(Icons.send),
+                            SizedBox(width: 3),
+                            IconButton(
+                              onPressed: _handleSendMessage,
+                              icon: Icon(Icons.send),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 3),
+              SizedBox(height: 3),
             ],
           );
         },
@@ -311,9 +403,7 @@ class MessageBubble extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color:
-              isMe
-                  ? Color.fromRGBO(74, 144, 226, 0.4)
-                  : Colors.grey.shade300,
+              isMe ? Color.fromRGBO(74, 144, 226, 0.4) : Colors.grey.shade300,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(

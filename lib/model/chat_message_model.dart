@@ -14,6 +14,10 @@ class ChatMessage {
   final MessageStatus status;
   final Timestamp timestamp;
   final List<String> readBy;
+  final bool? isReply;
+  final String? replyUserId;
+  final String? replyContent;
+
   ChatMessage({
     required this.id,
     required this.chatRoomId,
@@ -24,6 +28,9 @@ class ChatMessage {
     this.status = MessageStatus.sent,
     required this.timestamp,
     required this.readBy,
+    this.isReply=false,
+    this.replyUserId,
+    this.replyContent
   });
   factory ChatMessage.fromFireStore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -43,6 +50,9 @@ class ChatMessage {
         orElse: () => MessageStatus.sent,
       ),
       timestamp: data['timestamp'] as Timestamp,
+      isReply: data['isReply']??false,
+      replyUserId: data['replyUserId']as String,
+      replyContent: data['replyContent']as String,
     );
   }
 
@@ -56,6 +66,9 @@ class ChatMessage {
       'status': status.toString(),
       'timestamp': timestamp,
       'readBy': readBy,
+      'isReply':isReply,
+      'replyUserId':replyUserId,
+      'replyContent':replyContent
     };
   }
 
@@ -69,17 +82,23 @@ class ChatMessage {
     MessageStatus? status,
     Timestamp? timestamp,
     List<String>? readBy,
+    bool? isReply,
+    String? replyUserId,
+    String? replyContent,
   }) {
     return ChatMessage(
-      id: id??this.id,
-      chatRoomId: chatRoomId??this.chatRoomId,
-      senderId: senderId??this.senderId,
-      reciverId: reciverId??this.reciverId,
-      messageContent: messageContent??this.messageContent,
-      timestamp: timestamp??this.timestamp,
-      readBy: readBy??this.readBy,
-      type: type??this.type,
-      status: status??this.status,
+      id: id ?? this.id,
+      chatRoomId: chatRoomId ?? this.chatRoomId,
+      senderId: senderId ?? this.senderId,
+      reciverId: reciverId ?? this.reciverId,
+      messageContent: messageContent ?? this.messageContent,
+      timestamp: timestamp ?? this.timestamp,
+      readBy: readBy ?? this.readBy,
+      type: type ?? this.type,
+      status: status ?? this.status,
+      isReply: isReply ?? this.isReply,
+      replyContent: replyContent ?? this.replyContent,
+      replyUserId: replyUserId ?? this.replyUserId,
     );
   }
 }
