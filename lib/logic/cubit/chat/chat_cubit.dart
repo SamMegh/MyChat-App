@@ -52,6 +52,9 @@ class ChatCubit extends Cubit<ChatState> {
 
   void sendMessage({
     required content,
+    bool? isReply,
+    String? replyUserId,
+    String? replyContent,
   }) async {
     if (state.chatRoomId == null) return;
     try {
@@ -60,7 +63,9 @@ class ChatCubit extends Cubit<ChatState> {
         senderId: currentUserId,
         reciverId: state.ricevierId!,
         content: content,
-       
+        isReply: isReply,
+        replyContent: replyContent,
+        replyUserId: replyUserId
       );
     } catch (e) {
       emit(
