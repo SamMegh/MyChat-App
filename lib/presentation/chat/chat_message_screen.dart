@@ -420,26 +420,22 @@ class MessageBubble extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color:
-              isMe ? Color.fromRGBO(74, 145, 226, 0.211) : Colors.grey.shade300,
+              isMe ? Color.fromRGBO(74, 145, 226, 0.211) : Colors.grey.shade200,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
-          crossAxisAlignment:
-              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment:CrossAxisAlignment.start,
           children: [
             SizedBox(
               child: Column(
-                crossAxisAlignment:
-                    isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment:CrossAxisAlignment.center,
                 children: [
                   (message.isReply!)
                       ? Container(
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color:
-                              isMe
-                                  ? Color.fromRGBO(92, 127, 167, 0.4)
-                                  : Colors.grey.shade100,
+                          color: const Color.fromARGB(35, 0, 0, 0),
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Column(
@@ -460,33 +456,34 @@ class MessageBubble extends StatelessWidget {
                         ),
                       )
                       : SizedBox(),
-                  Text(message.messageContent, style: TextStyle(fontSize: 16)),
+                  
                 ],
               ),
             ),
+            Text(message.messageContent, style: TextStyle(fontSize: 16)),
             Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  DateFormat('hh:mm a').format(message.timestamp.toDate()),
-                  style: TextStyle(fontSize: 10),
-                ),
-                SizedBox(width: isMe ? 5 : 0),
-                isMe
-                    ? Icon(
-                      Icons.done_all_rounded,
-                      size: 15,
-                      color:
-                          message.status == MessageStatus.read
-                              ? Theme.of(context).primaryColor
-                              : Colors.black87,
-                    )
-                    : SizedBox(),
-              ],
-            ),
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    DateFormat('hh:mm a').format(message.timestamp.toDate()),
+                    style: TextStyle(fontSize: 10),
+                  ),
+                  SizedBox(width: isMe ? 5 : 0),
+                  isMe
+                      ? Icon(
+                        Icons.done_all_rounded,
+                        size: 15,
+                        color:
+                            message.status == MessageStatus.read
+                                ? Theme.of(context).primaryColor
+                                : Colors.black87,
+                      )
+                      : SizedBox(),
+                ],
+              ),
           ],
         ),
-      ),
+        ),
     );
   }
 }
