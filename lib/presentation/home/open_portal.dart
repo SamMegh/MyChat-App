@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mychat/presentation/chat/profile_screen.dart';
+import 'package:mychat/presentation/screens/profile_screen.dart';
 import 'package:mychat/presentation/home/home.dart';
+import 'package:mychat/presentation/screens/status_page.dart';
 
 class OpenPortal extends StatefulWidget {
   const OpenPortal({super.key});
   static final List<Widget> _screen = [
     Home(),
+    StatusPage(),
     ProfileScreen()
   ];
 
@@ -33,8 +35,12 @@ class _OpenPortalState extends State<OpenPortal> {
             icon: Icon(Icons.home_outlined),
           ),
           BottomNavigationBarItem(
+            label: 'Status',
+            icon: Icon(Icons.cameraswitch_outlined),
+          ),
+          BottomNavigationBarItem(
             label: 'Profile',
-            icon: Icon(Icons.manage_accounts_outlined),
+            icon: Icon(Icons.account_circle_outlined),
           ),
         ],
       ),

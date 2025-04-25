@@ -4,6 +4,7 @@ import 'package:mychat/logic/cubit/auth/auth_cubit.dart';
 import 'package:mychat/model/user_model.dart';
 import 'package:mychat/presentation/screens/auth/login.dart';
 import 'package:mychat/repositories/auth_repo.dart';
+import 'package:mychat/repositories/chat_repo.dart';
 import 'package:mychat/repositories/profile_field.dart';
 import 'package:mychat/routes/app_routor.dart';
 import 'package:mychat/services/service_locator.dart';
@@ -18,6 +19,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late final AuthRepo _authRepo;
+  late final ChatRepo _chatRepo;
   late final String _currentUserId;
   UserModel? _profiledata;
 
@@ -25,6 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _authRepo = getIt<AuthRepo>();
+    _chatRepo = getIt<ChatRepo>();
     _currentUserId = getIt<AuthRepo>().currentUser?.uid ?? "";
     getData();
   }
@@ -44,13 +47,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
-        title: Center(
-          child: Text(
-            "Profile",
-            style: Theme.of(
-              context,
-            ).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
+        title: Text(
+          "Profile",
+          style: Theme.of(
+            context,
+          ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(onPressed: () {}, icon: Icon(Icons.settings_outlined)),
@@ -74,9 +75,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     isShowPhotoUpload: false,
                                   )
                                   : Padding(
-                                    padding: const EdgeInsets.only(top:32.0),
+                                    padding: const EdgeInsets.only(top: 32.0),
                                     child: CircleAvatar(
-                                      radius: 53 ,
+                                      radius: 53,
                                       backgroundColor: Color.fromRGBO(
                                         74,
                                         144,
@@ -88,14 +89,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         _profiledata!.fullName
                                             .toString()[0]
                                             .toUpperCase(),
-                                            style: TextStyle(
-                                              fontSize: 53
-                                            ),
+                                        style: TextStyle(fontSize: 53),
                                       ),
                                     ),
                                   ),
                         ),
-                        SizedBox(height: 30,),
+                        SizedBox(height: 30),
                         ProfileField(
                           label: "Full Name",
                           value: _profiledata!.fullName.toString(),
@@ -127,6 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               : Center(child: CircularProgressIndicator()),
       floatingActionButton: TextButton.icon(
         onPressed: () async {
+          await _chatRepo.updateUserOnlineStatus(_currentUserId, false);
           await getIt<AuthCubit>().signOut();
           getIt<AppRoutor>().pushAndRemoveUntil(LoginScreen());
         },

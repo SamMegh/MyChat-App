@@ -433,7 +433,7 @@ class MessageBubble extends StatelessWidget {
                 children: [
                   (message.isReply!)
                       ? Container(
-                        padding: EdgeInsets.all(8),
+                        padding: EdgeInsets.only(left:8, right: 8),
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(35, 0, 0, 0),
                           borderRadius: BorderRadius.circular(5),
@@ -444,13 +444,14 @@ class MessageBubble extends StatelessWidget {
                           children: [
                             (message.replyUserId ==
                                     FirebaseAuth.instance.currentUser!.uid)
-                                ? Text("you",
+                                ? Text("You",
                                 style: TextStyle(
                                   color: Theme.of(context).primaryColor
                                 ),)
                                 : Text(receiverName.toString(),style: TextStyle(
                                   color: Colors.grey
-                                ),),
+                                ),
+                                ),
                             Text(message.replyContent.toString()),
                           ],
                         ),
